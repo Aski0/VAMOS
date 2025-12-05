@@ -1,0 +1,123 @@
+services:
+  # 1. DATABASE - PostgreSQL
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      # Mapowanie skryptu inicjalizacyjnego SQL
+      - ./init-db:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vamos-net
+    restart: always
+    # Healthcheck zapewnia, że Zabbix i App czekają na gotowość bazy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # 2. BACKEND - Aplikacja Spring Boot
+  app:
+    # Używamy budowania lokalnego, aby załadować kod Java
+    build:
+      context: ./VAMOS
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      # Połączenie z bazą przez nazwę serwisu 'db'
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: mysecretpassword
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics
+    networks:
+      - vamos-net
+    depends_on:
+      db:
+        condition: service_healthy # Czeka na gotowość bazy
+    restart: always
+
+  # 3. FRONTEND - Aplikacja React (serwowana przez Nginx)
+  frontend:
+    build:
+      context: ./VAMOS_frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - vamos-net
+    depends_on:
+      - app
+    restart: always
+
+  # 4. MONITORING - Zabbix Server i Web Interface
+  zabbix-server:
+    image: zabbix/zabbix-server-pgsql:6.4-alpine-latest
+    ports:
+      - "10051:10051"
+    environment:
+      DB_SERVER_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: postgres
+      ZBX_STARTPOLLERS: 10
+      ZBX_STARTTRAPPERS: 5
+    networks:
+      - vamos-net
+    depends_on:
+      db:
+        condition: service_healthy # Czeka na gotowość bazy
+    restart: always
+
+  zabbix-web-nginx-pgsql:
+    image: zabbix/zabbix-web-nginx-pgsql:6.4-alpine-latest
+    ports:
+      - "8081:8080" # Dostęp do Zabbixa: http://localhost:8081
+    environment:
+      ZBX_SERVER_HOST: zabbix-server
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: postgres
+      PHP_TZ: Europe/Warsaw
+      DB_SERVER_HOST: db # Kluczowa poprawka dla połączenia web-ui z bazą
+    networks:
+      - vamos-net
+    depends_on:
+      - zabbix-server
+    restart: always
+    
+  # 5. ZABBIX AGENT - Monitorowanie Kontenera Spring Boot ('app')
+  zabbix-agent-app:
+    image: zabbix/zabbix-agent:6.4-alpine-latest
+    hostname: app
+    ports:
+      - "10050" 
+    environment:
+      ZBX_SERVER_HOST: zabbix-server
+    volumes:
+      # Mapowanie Docker Socket (Wymagane do monitorowania metryk kontenerów)
+      - /var/run/docker.sock:/var/run/docker.sock:ro 
+    networks:
+      - vamos-net
+    depends_on:
+      - zabbix-server
+      - app 
+    restart: always
+    
+    # KLUCZOWE LINIE: Rozwiązanie problemu "permission denied"
+    user: root
+    privileged: true 
+
+volumes:
+  postgres_data: {}
+
+networks:
+  vamos-net:
+    driver: bridge
