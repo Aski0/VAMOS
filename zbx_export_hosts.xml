@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>6.4</version>
+    <host_groups>
+        <host_group>
+            <uuid>a571c0d144b14fd4a87a9d9b2aa9fcd6</uuid>
+            <name>Applications</name>
+        </host_group>
+        <host_group>
+            <uuid>748ad4d098d447d492bb935c907f652f</uuid>
+            <name>Databases</name>
+        </host_group>
+        <host_group>
+            <uuid>dc579cd7a1a34222933f24f52a68bcd8</uuid>
+            <name>Linux servers</name>
+        </host_group>
+        <host_group>
+            <uuid>6f6799aa69e844b4b3918f779f2abf08</uuid>
+            <name>Zabbix servers</name>
+        </host_group>
+    </host_groups>
+    <hosts>
+        <host>
+            <host>app</host>
+            <name>VAMOS Spring Boot Backend</name>
+            <templates>
+                <template>
+                    <name>Linux by Zabbix agent</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Applications</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <useip>NO</useip>
+                    <dns>app</dns>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <httptests>
+                <httptest>
+                    <name>VAMOS App and API Check</name>
+                    <steps>
+                        <step>
+                            <name>Check Backend API (/sources)</name>
+                            <url>http://app:8080/api/mix/sources</url>
+                            <follow_redirects>NO</follow_redirects>
+                            <required>200</required>
+                        </step>
+                    </steps>
+                </httptest>
+            </httptests>
+            <inventory_mode>DISABLED</inventory_mode>
+        </host>
+        <host>
+            <host>app-backend</host>
+            <name>app-backend</name>
+            <templates>
+                <template>
+                    <name>Docker by Zabbix agent 2</name>
+                </template>
+                <template>
+                    <name>Linux by Zabbix agent</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Linux servers</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <useip>NO</useip>
+                    <dns>zabbix-agent-app</dns>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <httptests>
+                <httptest>
+                    <name>Backend HTTP Check</name>
+                    <delay>30s</delay>
+                    <steps>
+                        <step>
+                            <name>Health endpoint</name>
+                            <url>http://app:8080/health</url>
+                            <follow_redirects>NO</follow_redirects>
+                            <status_codes>200</status_codes>
+                        </step>
+                    </steps>
+                </httptest>
+            </httptests>
+            <inventory_mode>DISABLED</inventory_mode>
+        </host>
+        <host>
+            <host>db-postgres</host>
+            <name>db-postgres</name>
+            <groups>
+                <group>
+                    <name>Databases</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <useip>NO</useip>
+                    <dns>db</dns>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <items>
+                <item>
+                    <name>PostgreSQL TCP Port Check</name>
+                    <type>SIMPLE</type>
+                    <key>net.tcp.port[db,5432]</key>
+                    <delay>30s</delay>
+                    <interface_ref>if1</interface_ref>
+                    <triggers>
+                        <trigger>
+                            <expression>last(/db-postgres/net.tcp.port[db,5432])=0</expression>
+                            <name>PostgreSQL port is not responding</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+            <inventory_mode>DISABLED</inventory_mode>
+        </host>
+        <host>
+            <host>frontend</host>
+            <name>Frontend React</name>
+            <groups>
+                <group>
+                    <name>Linux servers</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <useip>NO</useip>
+                    <ip/>
+                    <dns>frontend</dns>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <httptests>
+                <httptest>
+                    <name>Frontend HTTP Check</name>
+                    <delay>30s</delay>
+                    <steps>
+                        <step>
+                            <name>Check index page</name>
+                            <url>http://frontend:80/</url>
+                            <follow_redirects>NO</follow_redirects>
+                            <status_codes>200</status_codes>
+                        </step>
+                    </steps>
+                </httptest>
+            </httptests>
+            <inventory_mode>DISABLED</inventory_mode>
+        </host>
+        <host>
+            <host>Zabbix server</host>
+            <name>Zabbix server</name>
+            <templates>
+                <template>
+                    <name>Linux by Zabbix agent</name>
+                </template>
+                <template>
+                    <name>Zabbix server health</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Zabbix servers</name>
+                </group>
+            </groups>
+            <interfaces>
+                <interface>
+                    <useip>NO</useip>
+                    <dns>app</dns>
+                    <interface_ref>if1</interface_ref>
+                </interface>
+            </interfaces>
+            <inventory>
+                <name>app</name>
+                <location_lat>56.95387</location_lat>
+                <location_lon>24.22067</location_lon>
+            </inventory>
+            <inventory_mode>AUTOMATIC</inventory_mode>
+        </host>
+    </hosts>
+</zabbix_export>
