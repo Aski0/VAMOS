@@ -17,11 +17,11 @@ INSERT INTO va_sources (youtube_link, title, artist, is_video) VALUES
 ('qQzdAsjWGPg', 'My Way', 'Frank Sinatra', FALSE),
 ('CFlMy48ui9s', 'Fly me to the moon', 'Frank Sinatra', FALSE);
 
+
+
 -- DANE WIDEO/AUDIO (Może być użyte jako MUZYKA lub KLIP WIDEO)
 INSERT INTO va_sources (youtube_link, title, artist, is_video) VALUES
 ('ckbMWsBfO8o', 'SYRENKA', 'TUSZOL & WRONEK', TRUE),
 ('KQ6zr6kCPj8', 'Party Rock Anthem', 'LMFAO', TRUE),
 ('9bZkp7q19f0', 'Gangnam Style (Official Video)', 'PSY', TRUE),
 ('DyDfgMOUjCI', 'Bad Guy (Official Video)', 'Billie Eilish', TRUE);
-
--- Uwaga: Użyj ID YouTube (np. 'dQw4w9WgXcQ'), a nie pełnego URL

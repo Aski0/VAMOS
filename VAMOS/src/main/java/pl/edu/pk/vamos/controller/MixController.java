@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pk.vamos.service.MixService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -40,5 +41,45 @@ public class MixController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(customMix);
+    }
+
+    @GetMapping("/stress")
+    public ResponseEntity<String> runStressTest() {
+        long startTime = System.currentTimeMillis();
+        long endTime = startTime + 5000; // ok. 5 sekund stresu
+
+        List<int[]> memoryChunks = new ArrayList<>();
+        long prime = 0;
+
+        while (System.currentTimeMillis() < endTime) {
+
+            // CPU: obliczenia
+            long limit = 200_000; // możesz zwiększyć jak będzie za słabo
+            for (long i = 1; i <= limit; i++) {
+                if (isPrime(i)) {
+                    prime = i;
+                }
+            }
+
+            // RAM: trochę alokacji, ale nie przesadzajmy
+            memoryChunks.add(new int[64 * 1024]); // ok. 256 KB na blok
+            if (memoryChunks.size() > 50) {
+                memoryChunks.clear(); // żeby nie dobijać do OOM
+            }
+        }
+
+        long duration = System.currentTimeMillis() - startTime;
+        return ResponseEntity.ok("Stress test zakończony. Ostatnia liczba pierwsza: "
+                + prime + ", czas: " + duration + " ms, bloki: " + memoryChunks.size());
+    }
+    private boolean isPrime(long n) {
+        if (n <= 1) return false;
+        if (n == 2) return true;
+        if (n % 2 == 0) return false;
+
+        for (long i = 3; i * i <= n; i += 2) {
+            if (n % i == 0) return false;
+        }
+        return true;
     }
 }
