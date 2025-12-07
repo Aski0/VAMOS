@@ -46,7 +46,7 @@ public class MixController {
     @GetMapping("/stress")
     public ResponseEntity<String> runStressTest() {
         long startTime = System.currentTimeMillis();
-        long endTime = startTime + 5000; // ok. 5 sekund stresu
+        long endTime = startTime + 5000;
 
         List<int[]> memoryChunks = new ArrayList<>();
         long prime = 0;
@@ -54,17 +54,16 @@ public class MixController {
         while (System.currentTimeMillis() < endTime) {
 
             // CPU: obliczenia
-            long limit = 200_000; // możesz zwiększyć jak będzie za słabo
+            long limit = 200_000;
             for (long i = 1; i <= limit; i++) {
                 if (isPrime(i)) {
                     prime = i;
                 }
             }
 
-            // RAM: trochę alokacji, ale nie przesadzajmy
-            memoryChunks.add(new int[64 * 1024]); // ok. 256 KB na blok
+            memoryChunks.add(new int[64 * 1024]);
             if (memoryChunks.size() > 50) {
-                memoryChunks.clear(); // żeby nie dobijać do OOM
+                memoryChunks.clear();
             }
         }
 

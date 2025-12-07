@@ -1,6 +1,6 @@
 package pl.edu.pk.vamos.repository;
 
-import pl.edu.pk.vamos.model.VaSource; // Importujemy poprawną encję
+import pl.edu.pk.vamos.model.VaSource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

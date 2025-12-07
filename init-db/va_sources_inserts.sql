@@ -1,6 +1,15 @@
+--DODATKOWE ŹRÓDŁA MUZYCZNE DO VA_SOURCES
+
 DELETE FROM va_sources;
 
 INSERT INTO va_sources (youtube_link, title, artist, is_video) VALUES
+('X5P2uJELu5A', 'Don Pedalini', 'Franek Masturbatra', FALSE),
+('qQzdAsjWGPg', 'My Way', 'Frank Sinatra', FALSE),
+('CFlMy48ui9s', 'Fly me to the moon', 'Frank Sinatra', FALSE),
+('ckbMWsBfO8o', 'SYRENKA', 'TUSZOL & WRONEK', TRUE),
+('KQ6zr6kCPj8', 'Party Rock Anthem', 'LMFAO', TRUE),
+('9bZkp7q19f0', 'Gangnam Style (Official Video)', 'PSY', TRUE),
+('DyDfgMOUjCI', 'Bad Guy (Official Video)', 'Billie Eilish', TRUE),
 ('YF1R0hc5Q2I', 'Take Five', 'The Dave Brubeck Quartet', FALSE),
 ('p7DgMbhPRFg', 'What a Wonderful World', 'Louis Armstrong', FALSE),
 ('vUSzL2leaFM', 'Unforgettable', 'Nat King Cole', FALSE),

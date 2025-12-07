@@ -1,8 +1,3 @@
--- Upewnij się, że tabela jest tworzona, jeśli nie istnieje (DDL)
--- Spring Boot może już utworzyć tabelę dzięki 'spring.jpa.hibernate.ddl-auto=update'
--- ale lepiej mieć ten skrypt jako fallback i do wstawiania danych.
-
--- Upewnienie się, że tabela istnieje (dostosuj, jeśli Twoja nazwa to VaSource lub video_sources)
 CREATE TABLE IF NOT EXISTS va_sources (
     id BIGSERIAL PRIMARY KEY,
     youtube_link VARCHAR(255) UNIQUE NOT NULL,

@@ -1,4 +1,3 @@
-/* Reset i podstawy */
 body {
   margin: 0;
   background-color: #181818;
@@ -10,12 +9,11 @@ body {
   width: 100%;
   margin: 0 auto;
   padding: 20px;
-  padding-bottom: 90px; /* miejsce na dolny pasek */
+  padding-bottom: 90px;
   display: flex;
   flex-direction: column;
 }
 
-/* Header */
 .header {
   margin-bottom: 20px;
   border-bottom: 1px solid #303030;
@@ -43,8 +41,8 @@ h1 {
 /* DUŻY PLAYER YT */
 .video-clip-display {
   position: relative;
-  width: 100%;         /* 100% z 1600 = 1600 */
-  height: 800px;       /* MIN 800 */
+  width: 100%;
+  height: 800px;  
   background-color: #000;
   overflow: hidden;
 }
@@ -56,7 +54,7 @@ h1 {
   align-items: center;
   width: 100%;
   height: 800px;
-  background-color: #ffc0cb;
+  background-color: black;
   font-size: 48px;
   color: limegreen;
   font-weight: bold;
